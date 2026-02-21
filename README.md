@@ -1,39 +1,78 @@
-# Stanford Dogs Classification
+# Dog Image Classification
 
-A fine-grained image classifier for 120 dog breeds using a pre-trained **MobileNetV2** model via transfer learning in PyTorch, deployed intelligently as an interactive Streamlit application.
+Fine-grained image classification for 120 dog breeds using transfer learning with PyTorch (MobileNetV2 backbone) and a Streamlit web app for inference.
 
-## 🚀 Getting Started
+## Features
+- Transfer learning on Stanford Dogs (120 classes)
+- Two-phase training (head training, then full-model fine-tuning)
+- GPU support via CUDA when available (`cuda:0` fallback to CPU)
+- Streamlit interface for interactive predictions
 
-**Prerequisites:** You need Python (recommended 3.10-3.13 if you wish to use your RTX 3050 GPU immediately via PyPI CUDA wheels) and the generated virtual environment. 
+## Project Structure
+- `app.py` - Streamlit app for model inference
+- `src/model.py` - Model definition and classifier head setup
+- `src/train.py` - Training and validation loops
+- `src/prepare_data.py` - Dataset extraction/splitting utilities
+- `check_gpu.py` - Quick CUDA availability check
+- `requirements.txt` - Python dependencies
 
-1. **Activate the virtual environment**:
-   ```powershell
-   .\venv\Scripts\Activate.ps1
-   ```
+## Setup
+1. Create and activate a virtual environment:
 
-2. **Train the Model**:
-   *Note: `src/train.py` is currently set to run a fast integration test (2 batches per epoch).*
-   *To run the full training process, simply open `src/train.py` and remove the `if bi >= 2: break` limit in the `train_model` function.*
-   ```powershell
-   python src/train.py
-   ```
+```powershell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+```
 
-3. **Run the Streamlit App**:
-   The app will use the saved `models/best_model.pth`.
-   ```powershell
-   streamlit run app.py
-   ```
+2. Install dependencies:
 
-## 🧠 Model Architecture & Strategy
-- **Base**: `MobileNetV2` trained on ImageNet.
-- **Top**: Custom Dropout (0.4) + Linear(1280, 120) classification head to reduce overfitting.
-- **Phase 1 Training**: Adam optimizer on the custom head only (Frozen base).
-- **Phase 2 Training**: Unfrozen base structure fine-tuning with a smaller learning rate (`1e-5`).
+```powershell
+pip install -r requirements.txt
+```
 
-## 📁 Repository Structure
-- `app.py`: The Main Streamlit dashboard.
-- `src/model.py`: PyTorch Module architecture.
-- `src/train.py`: The main training and fine-tuning loops.
-- `src/prepare_data.py`: Preprocessed the `.tar` dataset into `data/train`, `data/val`, `data/test`.
-- `data/`: Extracted Images dataset, split ready.
-- `models/`: Stores the best `pth` checkpoints.
+3. (Recommended) Install CUDA-enabled PyTorch wheel if you want GPU training:
+
+```powershell
+pip uninstall -y torch torchvision torchaudio
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu130
+```
+
+## Data Preparation
+Prepare the dataset with:
+
+```powershell
+python src/prepare_data.py
+```
+
+Expected layout:
+- `data/raw/train/...`
+- `data/raw/val/...`
+
+## Training
+Run training:
+
+```powershell
+python src/train.py
+```
+
+The script automatically selects device:
+- Uses GPU when `torch.cuda.is_available()` is `True`
+- Otherwise uses CPU
+
+Best checkpoint is saved to:
+- `models/best_model.pth`
+
+## Run the App
+Start the Streamlit UI:
+
+```powershell
+streamlit run app.py
+```
+
+## Notes
+- If `torch.__version__` ends with `+cpu`, your environment is CPU-only.
+- Verify GPU availability with:
+
+```powershell
+python check_gpu.py
+```
