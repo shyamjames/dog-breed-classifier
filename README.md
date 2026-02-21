@@ -1,4 +1,4 @@
-# Dog Image Classification
+# Dog Breed Classification
 
 Fine-grained image classification for 120 dog breeds using transfer learning with PyTorch (MobileNetV2 backbone) and a Streamlit web app for inference.
 
