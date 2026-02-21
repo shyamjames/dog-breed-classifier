@@ -1,0 +1,28 @@
+# Virtual environments
+venv/
+env/
+.venv/
+.env
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Dataset Archives (Stanford Dogs)
+*.tar
+*.mat
+
+# Processed data directories to prevent huge git commits
+data/
+data/raw/
+
+# Model Weights
+models/*.pth
+models/*.pt
+models/*.h5
+models/*.keras
+
+# Streamlit config
+.streamlit/
